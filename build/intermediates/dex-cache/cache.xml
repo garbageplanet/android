@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-e6a2abfdc495207c9ab5105ca62d2383f3d86ef3.jar" />
+    </item>
+    <item
+        jar="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/pre-dexed/debug/classes-3f952b15187a57712a692e5f44f2eb5459bcb19c.jar" />
+    </item>
+    <item
+        jar="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/exploded-aar/com.getpebble/pebblekit/3.0.0/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="bd72bf60a6e56573eecb0e6abf419fac2b1fc1e6">
+        <dex dex="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/pre-dexed/debug/classes-d41b38449d99107de0660613d2d580ecacf4fe74.jar" />
+    </item>
+    <item
+        jar="/Users/anovil/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-401ed3d0fcd73536f3da36d93a12e23c9111d21a.jar" />
+    </item>
+    <item
+        jar="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/Users/anovil/AndroidStudioProjects/RoskaAndroid/app/build/intermediates/pre-dexed/debug/classes-5bdd1e4cb8791c8286ed402f9d481d8362f15adc.jar" />
+    </item>
+
+</items>
