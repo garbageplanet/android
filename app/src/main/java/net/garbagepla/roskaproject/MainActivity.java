@@ -123,7 +123,7 @@ public class MainActivity extends ActionBarActivity {
         // Launching my app
         // PebbleKit.startAppOnPebble(getApplicationContext(), PEBBLE_APP_UUID);
 
-// Closing my app
+        // Closing my app
         PebbleKit.closeAppOnPebble(getApplicationContext(), PEBBLE_APP_UUID);
 
     }
