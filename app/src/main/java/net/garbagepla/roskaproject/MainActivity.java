@@ -1,9 +1,6 @@
 package net.garbagepla.roskaproject;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,57 +8,38 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.getpebble.android.kit.PebbleKit;
-import com.getpebble.android.kit.util.PebbleDictionary;
 
 import net.garbagepla.roskaproject.location.RoskaTracker;
+import net.garbagepla.roskaproject.pebble.RoskaPebbleDataReceiver;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 
 public class MainActivity extends ActionBarActivity {
 
 
-    // private final static UUID PEBBLE_APP_UUID = UUID.fromString("763c46ac-73c9-4229-aca7-97be723a59c7");
-
-    private final static UUID PEBBLE_APP_UUID = UUID.fromString("59c46eff-156f-430b-90cf-e365cbd4322a"); // demo app
-
-    ArrayAdapter <String> adapter;
-
-    ArrayList<String> listItems=new ArrayList<String>();
-
-    RoskaTracker locationTracker = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ListView logListView = (ListView) findViewById(R.id.logListView);
         adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, listItems) ;
+                android.R.layout.simple_list_item_1, logListItems) ;
         logListView.setAdapter(adapter);
-        // TextView textView = (TextView) findViewById(R.id.text_view01);
-        // boolean connected = PebbleKit.isWatchConnected(getApplicationContext());
+
         final boolean connected = PebbleKit.areAppMessagesSupported(getApplicationContext());
+        if ( connected ) {
+            setupPebbleConnections();
+        }
 
-/*
-        Button sendButton = (Button) findViewById(R.id.button);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PebbleDictionary data = new PebbleDictionary();
-                data.addUint8(0, (byte) 42);
-                data.addString(1, "A string");
-                PebbleKit.sendDataToPebble(getApplicationContext(), PEBBLE_APP_UUID, data);
-                Log.i("MainActivity", "sent Data");
-            }
-        });
-*/
+    }
 
-        PebbleKit.registerReceivedAckHandler(getApplicationContext(), new PebbleKit.PebbleAckReceiver(PEBBLE_APP_UUID) {
+    private void setupPebbleConnections() {
+
+        PebbleKit.registerReceivedAckHandler(getApplicationContext(), new PebbleKit.PebbleAckReceiver(RoskaUtil.PEBBLE_APP_UUID) {
 
             @Override
             public void receiveAck(Context context, int transactionId) {
@@ -70,7 +48,7 @@ public class MainActivity extends ActionBarActivity {
 
         });
 
-        PebbleKit.registerReceivedNackHandler(getApplicationContext(), new PebbleKit.PebbleNackReceiver(PEBBLE_APP_UUID) {
+        PebbleKit.registerReceivedNackHandler(getApplicationContext(), new PebbleKit.PebbleNackReceiver(RoskaUtil.PEBBLE_APP_UUID) {
 
             @Override
             public void receiveNack(Context context, int transactionId) {
@@ -78,59 +56,9 @@ public class MainActivity extends ActionBarActivity {
             }
 
         });
-        final Handler handler = new Handler();
-        PebbleKit.registerReceivedDataHandler(this, new PebbleKit.PebbleDataReceiver(PEBBLE_APP_UUID) {
 
-            @Override
-            public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-                if ( data == null ) {
-                    return ;
-                }
-
-                Log.i(getLocalClassName(), "Received value=" + RoskaUtil.byteArrayToInt(data.getBytes(0)) + " for key: 0 and size: " + data.size());
-
-                handler.post(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        /* Update your UI here. */
-                        Toast.makeText(context, "Received trash from pebble", Toast.LENGTH_SHORT);
-
-                        locationTracker = new RoskaTracker(getMainActivity());
-                        locationTracker.setUserData(data);
-                        locationTracker.startTracking();
-
-                    }
-
-                });
-                PebbleKit.sendAckToPebble(getApplicationContext(), transactionId);
-            }
-
-        });
-
-        PebbleKit.registerPebbleConnectedReceiver(getApplicationContext(), new BroadcastReceiver() {
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Toast.makeText(context, "Pebble connected!",Toast.LENGTH_SHORT);
-            }
-
-        });
-
-        PebbleKit.registerPebbleDisconnectedReceiver(getApplicationContext(), new BroadcastReceiver() {
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Toast.makeText(context, "Pebble disconnected!", Toast.LENGTH_SHORT);
-            }
-
-        });
-
-        // Launching my app
-        // PebbleKit.startAppOnPebble(getApplicationContext(), PEBBLE_APP_UUID);
-
-        // Closing my app
-        PebbleKit.closeAppOnPebble(getApplicationContext(), PEBBLE_APP_UUID);
+        RoskaPebbleDataReceiver dataReceiver = new RoskaPebbleDataReceiver(this);
+        PebbleKit.registerReceivedDataHandler(this, dataReceiver);
 
     }
 
@@ -138,8 +66,8 @@ public class MainActivity extends ActionBarActivity {
         return adapter;
     }
 
-    public ArrayList<String> getListItems() {
-        return listItems;
+    public ArrayList<String> getLogListItems() {
+        return logListItems;
     }
 
     private MainActivity getMainActivity() {
@@ -167,4 +95,12 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    ArrayAdapter <String> adapter;
+
+    ArrayList<String> logListItems =new ArrayList<String>();
+
+    RoskaTracker locationTracker = null;
+
+
 }

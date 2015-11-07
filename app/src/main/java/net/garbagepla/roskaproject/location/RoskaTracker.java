@@ -1,8 +1,8 @@
 package net.garbagepla.roskaproject.location;
 
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -10,12 +10,15 @@ import com.getpebble.android.kit.util.PebbleDictionary;
 import net.garbagepla.roskaproject.MainActivity;
 import net.garbagepla.roskaproject.RoskaUtil;
 
+import java.net.URL;
+import java.util.HashMap;
+
 /**
  * Created by anovil on 07/11/15.
  */
 public class RoskaTracker {
 
-    private MainActivity context = null;
+    private MainActivity activity = null;
 
     private LocationManager locationManager = null;
 
@@ -23,14 +26,14 @@ public class RoskaTracker {
 
     private PebbleDictionary userData = null;
 
-    public RoskaTracker(MainActivity context) {
-        this.context = context;
+    public RoskaTracker(MainActivity activity) {
+        this.activity = activity;
         this.locationListener = new RoskaLocationListener(this);
     }
 
     public void startTracking() {
         // get the location manager
-        locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+        locationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
 
         // start getting updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
@@ -42,11 +45,16 @@ public class RoskaTracker {
 
         locationManager.removeUpdates(this.locationListener);
 
-        context.getListItems().add("Trash plot lat:" + location.getLatitude() +
+        activity.getLogListItems().add("Trash plot lat:" + location.getLatitude() +
                         " long: " + location.getLongitude() + " scale: " + RoskaUtil.byteArrayToInt(getUserData().getBytes(0))
         );
 
-        context.getAdapter().notifyDataSetChanged();
+        activity.getAdapter().notifyDataSetChanged();
+
+        HashMap<String, String> params = new HashMap<String, String>(2);
+        params.put("lat", Double.toString(location.getLatitude()));
+        params.put("lng", Double.toString(location.getLongitude()));
+        new ApiLauncher(params).execute("http://api.garbagepla.net/api/userlesstrash");
     }
 
     private PebbleDictionary getUserData() {
@@ -57,6 +65,26 @@ public class RoskaTracker {
         this.userData = userData;
     }
 
+
+    private class ApiLauncher extends AsyncTask<String, String, String> {
+
+        private final HashMap<String, String> mData;
+
+        public ApiLauncher(HashMap<String, String> data) {
+            this.mData = data;
+        }
+        protected String doInBackground(String... params) {
+            return RoskaUtil.postData(params[0], mData);
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            // setProgressPercent(progress[0]);
+        }
+
+        protected void onPostExecute(Long result) {
+            // showDialog("Downloaded " + result + " bytes");
+        }
+    }
 
 
 }
