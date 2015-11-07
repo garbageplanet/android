@@ -3,22 +3,20 @@ package net.garbagepla.roskaproject;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
+
+import net.garbagepla.roskaproject.location.RoskaTracker;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -34,6 +32,8 @@ public class MainActivity extends ActionBarActivity {
     ArrayAdapter <String> adapter;
 
     ArrayList<String> listItems=new ArrayList<String>();
+
+    RoskaTracker locationTracker = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,7 @@ public class MainActivity extends ActionBarActivity {
                     return ;
                 }
 
-                Log.i(getLocalClassName(), "Received value=" + byteArrayToInt(data.getBytes(0)) + " for key: 0 and size: " + data.size());
+                Log.i(getLocalClassName(), "Received value=" + RoskaUtil.byteArrayToInt(data.getBytes(0)) + " for key: 0 and size: " + data.size());
 
                 handler.post(new Runnable() {
 
@@ -96,16 +96,10 @@ public class MainActivity extends ActionBarActivity {
                         /* Update your UI here. */
                         Toast.makeText(context, "Received trash from pebble", Toast.LENGTH_SHORT);
 
+                        locationTracker = new RoskaTracker(getMainActivity());
+                        locationTracker.setUserData(data);
+                        locationTracker.startTracking();
 
-                        // Acquire a reference to the system Location Manager
-                        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-                        String locationProvider = LocationManager.NETWORK_PROVIDER;
-                        Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-                        listItems.add("Trash plot lat:" + lastKnownLocation.getLatitude() +
-                                        " long: " + lastKnownLocation.getLongitude() + " scale: " + byteArrayToInt(data.getBytes(0))
-                        );
-
-                        adapter.notifyDataSetChanged();
                     }
 
                 });
@@ -140,15 +134,16 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    public static int byteArrayToInt(byte[] b)
-    {
-        int MASK = 0xFF;
-        int result = 0;
-        result = b[0] & MASK;
-        result = result + ((b[1] & MASK) << 8);
-        result = result + ((b[2] & MASK) << 16);
-        result = result + ((b[3] & MASK) << 24);
-        return result;
+    public ArrayAdapter<String> getAdapter() {
+        return adapter;
+    }
+
+    public ArrayList<String> getListItems() {
+        return listItems;
+    }
+
+    private MainActivity getMainActivity() {
+        return this;
     }
 
     @Override
