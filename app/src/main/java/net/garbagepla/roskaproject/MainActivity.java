@@ -11,12 +11,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 
@@ -27,14 +31,21 @@ public class MainActivity extends ActionBarActivity {
 
     private final static UUID PEBBLE_APP_UUID = UUID.fromString("59c46eff-156f-430b-90cf-e365cbd4322a"); // demo app
 
+    ArrayAdapter <String> adapter;
+
+    ArrayList<String> listItems=new ArrayList<String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView textView = (TextView) findViewById(R.id.text_view01);
+        ListView logListView = (ListView) findViewById(R.id.logListView);
+        adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, listItems) ;
+        logListView.setAdapter(adapter);
+        // TextView textView = (TextView) findViewById(R.id.text_view01);
         // boolean connected = PebbleKit.isWatchConnected(getApplicationContext());
         final boolean connected = PebbleKit.areAppMessagesSupported(getApplicationContext());
-        textView.setText("The pebble kit app messages supported: " + connected);
 
 /*
         Button sendButton = (Button) findViewById(R.id.button);
@@ -50,7 +61,7 @@ public class MainActivity extends ActionBarActivity {
         });
 */
 
-     /*   PebbleKit.registerReceivedAckHandler(getApplicationContext(), new PebbleKit.PebbleAckReceiver(PEBBLE_APP_UUID) {
+        PebbleKit.registerReceivedAckHandler(getApplicationContext(), new PebbleKit.PebbleAckReceiver(PEBBLE_APP_UUID) {
 
             @Override
             public void receiveAck(Context context, int transactionId) {
@@ -67,7 +78,6 @@ public class MainActivity extends ActionBarActivity {
             }
 
         });
-*/
         final Handler handler = new Handler();
         PebbleKit.registerReceivedDataHandler(this, new PebbleKit.PebbleDataReceiver(PEBBLE_APP_UUID) {
 
@@ -76,7 +86,8 @@ public class MainActivity extends ActionBarActivity {
                 if ( data == null ) {
                     return ;
                 }
-                Log.i(getLocalClassName(), "Received value=" + data + " for key: 0");
+
+                Log.i(getLocalClassName(), "Received value=" + byteArrayToInt(data.getBytes(0)) + " for key: 0 and size: " + data.size());
 
                 handler.post(new Runnable() {
 
@@ -85,15 +96,16 @@ public class MainActivity extends ActionBarActivity {
                         /* Update your UI here. */
                         Toast.makeText(context, "Received trash from pebble", Toast.LENGTH_SHORT);
 
+
                         // Acquire a reference to the system Location Manager
                         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
                         String locationProvider = LocationManager.NETWORK_PROVIDER;
                         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-
-                        TextView textView = (TextView) findViewById(R.id.text_view01);
-                        textView.setText("Received plot at location lat:" + lastKnownLocation.getLatitude() +
-                                        " long: " + lastKnownLocation.getLongitude() + " at: " + lastKnownLocation.getTime()
+                        listItems.add("Trash plot lat:" + lastKnownLocation.getLatitude() +
+                                        " long: " + lastKnownLocation.getLongitude() + " scale: " + byteArrayToInt(data.getBytes(0))
                         );
+
+                        adapter.notifyDataSetChanged();
                     }
 
                 });
@@ -128,6 +140,16 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    public static int byteArrayToInt(byte[] b)
+    {
+        int MASK = 0xFF;
+        int result = 0;
+        result = b[0] & MASK;
+        result = result + ((b[1] & MASK) << 8);
+        result = result + ((b[2] & MASK) << 16);
+        result = result + ((b[3] & MASK) << 24);
+        return result;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
