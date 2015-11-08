@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,9 +32,15 @@ public final class RoskaUtil {
 
     // private final static UUID PEBBLE_APP_UUID = UUID.fromString("763c46ac-73c9-4229-aca7-97be723a59c7");
 
-    public final static UUID PEBBLE_APP_UUID = UUID.fromString("59c46eff-156f-430b-90cf-e365cbd4322a"); // demo app
+    // public final static UUID PEBBLE_APP_UUID = UUID.fromString("59c46eff-156f-430b-90cf-e365cbd4322a"); // demo app
+
+    public final static UUID PEBBLE_APP_UUID = UUID.fromString("5b91c692-1ae5-4995-80b7-d92965768b03"); // rspd
 
     private static final String CLASS_NAME = "RoskaUtil";
+
+    public static final int KEY_BUTTON_UP = 0 ;
+    public static final int KEY_BUTTON_DOWN = 1 ;
+
 
     public static int byteArrayToInt(byte[] b) {
         int MASK = 0xFF;
@@ -43,6 +50,22 @@ public final class RoskaUtil {
         result = result + ((b[2] & MASK) << 16);
         result = result + ((b[3] & MASK) << 24);
         return result;
+    }
+
+    public static final byte[] intToByteArray(int value) {
+        return new byte[] {
+                (byte)(value >>> 24),
+                (byte)(value >>> 16),
+                (byte)(value >>> 8),
+                (byte)value};
+    }
+
+    public static final byte[] toByteArray(int value) {
+        return  ByteBuffer.allocate(4).putInt(value).array();
+    }
+
+    public static final int fromByteArray(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).getInt();
     }
 
     // courtesy: http://stackoverflow.com/questions/2938502/sending-post-data-in-android

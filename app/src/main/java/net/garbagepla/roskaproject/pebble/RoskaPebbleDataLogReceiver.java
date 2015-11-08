@@ -2,39 +2,32 @@ package net.garbagepla.roskaproject.pebble;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.getpebble.android.kit.PebbleKit;
-import com.getpebble.android.kit.util.PebbleDictionary;
 
 import net.garbagepla.roskaproject.MainActivity;
 import net.garbagepla.roskaproject.RoskaUtil;
 import net.garbagepla.roskaproject.location.RoskaTracker;
 
-import java.io.UnsupportedEncodingException;
+import java.util.UUID;
 
 /**
  * Created by anovil on 07/11/15.
  */
-public class RoskaPebbleDataReceiver extends PebbleKit.PebbleDataReceiver {
+public class RoskaPebbleDataLogReceiver extends PebbleKit.PebbleDataLogReceiver {
 
-    private final MainActivity activity;
+    private final MainActivity mActivity;
 
     private RoskaTracker locationTracker;
 
-    private static final String CLASS_NAME = "RoskaPebbleDataReceiver" ;
-
-    public RoskaPebbleDataReceiver(MainActivity activity) {
+    protected RoskaPebbleDataLogReceiver(UUID subscribedUuid, MainActivity activity) {
         super(RoskaUtil.PEBBLE_APP_UUID);
-        this.activity = activity ;
+        this.mActivity = activity ;
     }
 
-    public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-        if ( data == null ) {
-            return ;
-        }
-
+    @Override
+    public void receiveData(final Context context, UUID logUuid, Long timestamp, final Long tag, final Long data) {
         final Handler handler = new Handler();
         handler.post(new Runnable() {
 
@@ -43,14 +36,12 @@ public class RoskaPebbleDataReceiver extends PebbleKit.PebbleDataReceiver {
                         /* Update your UI here. */
                 Toast.makeText(context, "Received trash from pebble", Toast.LENGTH_SHORT);
 
-                locationTracker = new RoskaTracker(activity);
-                locationTracker.setUserData(data);
+                locationTracker = new RoskaTracker(mActivity);
+                // locationTracker.setUserData(data.toString());
                 locationTracker.startTracking();
 
             }
 
         });
-        PebbleKit.sendAckToPebble(this.activity, transactionId);
     }
-
 }

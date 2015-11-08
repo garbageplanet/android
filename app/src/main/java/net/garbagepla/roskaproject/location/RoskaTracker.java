@@ -26,6 +26,8 @@ public class RoskaTracker {
 
     private PebbleDictionary userData = null;
 
+
+
     public RoskaTracker(MainActivity activity) {
         this.activity = activity;
         this.locationListener = new RoskaLocationListener(this);
@@ -46,7 +48,7 @@ public class RoskaTracker {
         locationManager.removeUpdates(this.locationListener);
 
         activity.getLogListItems().add("Trash plot lat:" + location.getLatitude() +
-                        " long: " + location.getLongitude() + " scale: " + RoskaUtil.byteArrayToInt(getUserData().getBytes(0))
+                        " long: " + location.getLongitude() + " scale: " + getUserDataValue()
         );
 
         activity.getAdapter().notifyDataSetChanged();
@@ -54,7 +56,7 @@ public class RoskaTracker {
         HashMap<String, String> params = new HashMap<String, String>(2);
         params.put("lat", Double.toString(location.getLatitude()));
         params.put("lng", Double.toString(location.getLongitude()));
-        new ApiLauncher(params).execute("http://api.garbagepla.net/api/userlesstrash");
+        // new ApiLauncher(params).execute("http://api.garbagepla.net/api/userlesstrash");
     }
 
     private PebbleDictionary getUserData() {
@@ -65,6 +67,15 @@ public class RoskaTracker {
         this.userData = userData;
     }
 
+    private Long getUserDataValue() {
+        Long l = 0L;
+        if (this.getUserData().getInteger(RoskaUtil.KEY_BUTTON_DOWN) != null) {
+            return this.getUserData().getInteger(RoskaUtil.KEY_BUTTON_DOWN);
+        } else if (this.getUserData().getInteger(RoskaUtil.KEY_BUTTON_UP) != null) {
+            return this.getUserData().getInteger(RoskaUtil.KEY_BUTTON_UP);
+        }
+        return l;
+    }
 
     private class ApiLauncher extends AsyncTask<String, String, String> {
 
