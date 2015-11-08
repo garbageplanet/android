@@ -34,7 +34,9 @@ public final class RoskaUtil {
 
     // public final static UUID PEBBLE_APP_UUID = UUID.fromString("59c46eff-156f-430b-90cf-e365cbd4322a"); // demo app
 
-    public final static UUID PEBBLE_APP_UUID = UUID.fromString("5b91c692-1ae5-4995-80b7-d92965768b03"); // rspd
+    // public final static UUID PEBBLE_APP_UUID = UUID.fromString("5b91c692-1ae5-4995-80b7-d92965768b03"); // rspd
+
+    public final static UUID PEBBLE_APP_UUID = UUID.fromString("2acab78c-7d47-46fa-beff-d42da21fce6b"); // rspd accel
 
     private static final String CLASS_NAME = "RoskaUtil";
 

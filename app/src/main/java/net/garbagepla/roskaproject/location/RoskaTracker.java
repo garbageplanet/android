@@ -53,10 +53,11 @@ public class RoskaTracker {
 
         activity.getAdapter().notifyDataSetChanged();
 
-        HashMap<String, String> params = new HashMap<String, String>(2);
+        HashMap<String, String> params = new HashMap<String, String>(3);
         params.put("lat", Double.toString(location.getLatitude()));
         params.put("lng", Double.toString(location.getLongitude()));
-        // new ApiLauncher(params).execute("http://api.garbagepla.net/api/userlesstrash");
+        params.put("amount", Long.toString(getUserDataValue()));
+        new ApiLauncher(params).execute("http://api.garbagepla.net/api/userlesstrash");
     }
 
     private PebbleDictionary getUserData() {
