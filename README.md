@@ -11,3 +11,4 @@ The android app which acts as a broker between the [watch app](https://github.co
 - [ ] talkback to watch to confirm marker was saved / recorded
 - [ ] allow offline mode / store data temporarily in app until phone is back online
 - [ ] display current position on a map in the UI
+- [ ] user authentification / glome authentification
